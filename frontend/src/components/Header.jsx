@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate, useSearchParams } from "react-router-dom";
 import { MagnifyingGlass, ShoppingBag, Heart, List, X, User, SignOut, Sparkle } from "@phosphor-icons/react";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
@@ -7,28 +7,36 @@ import { useCart } from "../context/CartContext";
 export default function Header() {
   const { user, logout } = useAuth();
   const { cart, wishlist } = useCart();
-  const [search, setSearch] = useState("");
+  const [params] = useSearchParams();
+  const searchParam = params.get("search") || "";
+  const [search, setSearch] = useState(searchParam);
   const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
   const debounceRef = useRef(null);
 
+  useEffect(() => {
+    setSearch(searchParam);
+  }, [searchParam]);
+
   const cartCount = cart.items?.length || 0;
   const wishlistCount = wishlist.length || 0;
 
-  // Debounced search — navigates on keystroke after 250ms
+  // Debounced search — navigates on keystroke after 200ms
   const handleSearchChange = (e) => {
     const val = e.target.value;
     setSearch(val);
     clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
-      navigate(val.trim() ? `/?search=${encodeURIComponent(val.trim())}` : "/");
-    }, 250);
+      const trimmed = val.trim();
+      navigate(trimmed ? `/?search=${encodeURIComponent(trimmed)}` : "/");
+    }, 200);
   };
 
   const onSearchSubmit = (e) => {
     e.preventDefault();
     clearTimeout(debounceRef.current);
-    navigate(search.trim() ? `/?search=${encodeURIComponent(search.trim())}` : "/");
+    const trimmed = search.trim();
+    navigate(trimmed ? `/?search=${encodeURIComponent(trimmed)}` : "/");
   };
 
   // Close mobile nav on route change

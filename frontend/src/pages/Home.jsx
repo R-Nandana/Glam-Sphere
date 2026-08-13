@@ -12,6 +12,52 @@ const CATEGORIES = ["All", "Skincare", "Makeup", "Haircare", "Fragrance", "Tools
 
 const categoryEmoji = { All: "✦", Skincare: "🌿", Makeup: "💄", Haircare: "🪐", Fragrance: "🌸", Tools: "✦" };
 
+const filterAndSortProducts = (list, search, category, sort) => {
+  let result = [...list];
+
+  if (search && search.trim()) {
+    const q = search.trim().toLowerCase();
+    result = result.filter((p) => {
+      const name = p.name?.toLowerCase() || "";
+      const brand = p.brand?.toLowerCase() || "";
+      const cat = p.category?.toLowerCase() || "";
+      const sub = p.subCategory?.toLowerCase() || "";
+      const desc = p.description?.toLowerCase() || "";
+      const tags = (p.tags || []).join(" ").toLowerCase();
+      const concerns = (p.concerns || []).join(" ").toLowerCase();
+      const ingredients = (p.ingredients || []).join(" ").toLowerCase();
+      return (
+        name.includes(q) ||
+        brand.includes(q) ||
+        cat.includes(q) ||
+        sub.includes(q) ||
+        desc.includes(q) ||
+        tags.includes(q) ||
+        concerns.includes(q) ||
+        ingredients.includes(q)
+      );
+    });
+  }
+
+  if (category && category !== "All") {
+    result = result.filter(
+      (p) => (p.category || "").toLowerCase() === category.toLowerCase()
+    );
+  }
+
+  if (sort === "price-low") {
+    result.sort((a, b) => a.price - b.price);
+  } else if (sort === "price-high") {
+    result.sort((a, b) => b.price - a.price);
+  } else if (sort === "rating") {
+    result.sort((a, b) => (b.ratingAvg || 0) - (a.ratingAvg || 0));
+  } else if (sort === "newest") {
+    result.sort((a, b) => (b.ratingCount || 0) - (a.ratingCount || 0));
+  }
+
+  return result;
+};
+
 export default function Home() {
   const [params] = useSearchParams();
   const { user } = useAuth();
@@ -29,10 +75,17 @@ export default function Home() {
     setLoadingProducts(true);
     api.get("/products", { params: { search, category, sort } })
       .then(({ data }) => {
-        if (data.items?.length > 0) setProducts(data.items);
-        else { setProducts(sampleProducts); setOffline(true); }
+        if (data.items && data.items.length > 0) {
+          setProducts(data.items);
+        } else {
+          setProducts(filterAndSortProducts(sampleProducts, search, category, sort));
+          setOffline(true);
+        }
       })
-      .catch(() => { setProducts(sampleProducts); setOffline(true); })
+      .catch(() => {
+        setProducts(filterAndSortProducts(sampleProducts, search, category, sort));
+        setOffline(true);
+      })
       .finally(() => setLoadingProducts(false));
   }, [search, category, sort]);
 
@@ -40,7 +93,7 @@ export default function Home() {
     setLoadingTrending(true);
     api.get("/ai/trending")
       .then(({ data }) => {
-        if (data.items?.length > 0) setTrending(data.items);
+        if (data.items && data.items.length > 0) setTrending(data.items);
         else { setTrending(sampleProducts.filter((p) => p.trending)); setOffline(true); }
       })
       .catch(() => { setTrending(sampleProducts.filter((p) => p.trending)); setOffline(true); })

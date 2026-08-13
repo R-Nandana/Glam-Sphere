@@ -5,6 +5,7 @@ import { useAuth } from "./AuthContext";
 const CartContext = createContext(null);
 const WISHLIST_KEY = "glamsphere_wishlist";
 const CART_KEY = "glamsphere_cart";
+const getProductId = (product) => String(typeof product === "string" ? product : product?._id || product?.id || product);
 
 export function CartProvider({ children }) {
   const { user } = useAuth();
@@ -62,7 +63,7 @@ export function CartProvider({ children }) {
     try {
       const { data } = await api.get("/wishlist");
       if (data?.wishlist) {
-        const ids = data.wishlist.map((p) => (typeof p === "string" ? p : p._id));
+        const ids = data.wishlist.map(getProductId);
         setWishlist(ids);
       }
     } catch {
@@ -160,8 +161,9 @@ export function CartProvider({ children }) {
   const toggleWishlist = async (productId) => {
     const strId = String(productId);
     setWishlist((prev) => {
-      const exists = prev.includes(strId);
-      const updated = exists ? prev.filter((id) => id !== strId) : [...prev, strId];
+      const normalized = prev.map(getProductId);
+      const exists = normalized.includes(strId);
+      const updated = exists ? normalized.filter((id) => id !== strId) : [...normalized, strId];
       return updated;
     });
 
@@ -169,7 +171,7 @@ export function CartProvider({ children }) {
       try {
         const { data } = await api.post(`/wishlist/${productId}`);
         if (data?.wishlist) {
-          const ids = data.wishlist.map((p) => (typeof p === "string" ? p : p._id));
+          const ids = data.wishlist.map(getProductId);
           setWishlist(ids);
         }
       } catch {

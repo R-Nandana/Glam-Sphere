@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Heart, ShoppingBag } from "@phosphor-icons/react";
 import api from "../api/axios";
@@ -9,7 +9,7 @@ import { useToast } from "../components/Toast";
 import sampleProducts from "../data/sampleProducts";
 
 export default function Wishlist() {
-  const [items, setItems] = useState([]);
+  const [catalog, setCatalog] = useState(sampleProducts);
   const [loading, setLoading] = useState(true);
   const [suggestions, setSuggestions] = useState([]);
   const { wishlist, addToCart, toggleWishlist } = useCart();
@@ -19,30 +19,17 @@ export default function Wishlist() {
     let isMounted = true;
     setLoading(true);
 
-    api.get("/wishlist")
+    api.get("/products")
       .then(({ data }) => {
-        if (isMounted) {
-          if (data?.wishlist?.length > 0) {
-            setItems(data.wishlist);
-          } else {
-            // Fallback to local wishlist matched items
-            const localItems = sampleProducts.filter((p) => wishlist.includes(String(p._id)));
-            setItems(localItems);
-          }
+        if (isMounted && data.items && data.items.length > 0) {
+          setCatalog(data.items);
         }
       })
-      .catch(() => {
-        if (isMounted) {
-          // Offline / Guest fallback
-          const localItems = sampleProducts.filter((p) => wishlist.includes(String(p._id)));
-          setItems(localItems);
-        }
-      })
+      .catch(() => {})
       .finally(() => {
         if (isMounted) setLoading(false);
       });
 
-    // Load trending suggestions for empty state
     api.get("/ai/trending")
       .then(({ data }) => {
         if (isMounted) setSuggestions((data.items || sampleProducts.filter((p) => p.trending)).slice(0, 4));
@@ -54,7 +41,15 @@ export default function Wishlist() {
     return () => {
       isMounted = false;
     };
-  }, [wishlist]);
+  }, []);
+
+  // Dynamically derive wishlisted items from wishlist IDs in CartContext
+  const items = useMemo(() => {
+    return catalog.filter((p) => {
+      const pId = String(p._id || p.id || "");
+      return wishlist.some((wId) => String(wId) === pId);
+    });
+  }, [catalog, wishlist]);
 
   const handleMoveToBag = async (productId, name) => {
     try {

@@ -20,7 +20,8 @@ export default function ProductCard({ product }) {
   const { addToCart, toggleWishlist, wishlist } = useCart();
   const [quickOpen, setQuickOpen] = useState(false);
   const [adding, setAdding] = useState(false);
-  const isWishlisted = wishlist.includes(product._id);
+  const productIdStr = String(product._id || product.id || "");
+  const isWishlisted = wishlist.some((id) => String(id) === productIdStr);
   const image = product.images?.[0]?.url;
   const discount = product.mrp > product.price ? Math.round(((product.mrp - product.price) / product.mrp) * 100) : 0;
   const outOfStock = product.stock === 0;

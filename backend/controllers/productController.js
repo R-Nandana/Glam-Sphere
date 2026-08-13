@@ -2,13 +2,28 @@ const asyncHandler = require("express-async-handler");
 const Product = require("../models/Product");
 const { uploadBufferToCloudinary, deleteFromCloudinary } = require("../utils/cloudinaryUpload");
 
+const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 // @desc  List products with search, category filter, sort, pagination
 // @route GET /api/products?search=&category=&sort=&page=&limit=
 const getProducts = asyncHandler(async (req, res) => {
   const { search, category, minPrice, maxPrice, skinType, sort, page = 1, limit = 20 } = req.query;
 
   const query = { isActive: true };
-  if (search) query.$text = { $search: search };
+  if (search?.trim()) {
+    const regex = new RegExp(escapeRegex(search.trim()), "i");
+    query.$or = [
+      { name: regex },
+      { brand: regex },
+      { description: regex },
+      { category: regex },
+      { subCategory: regex },
+      { tags: regex },
+      { concerns: regex },
+      { ingredients: regex },
+      { "shades.name": regex },
+    ];
+  }
   if (category && category !== "All") query.category = category;
   if (skinType) query.skinTypes = skinType;
   if (minPrice || maxPrice) {
