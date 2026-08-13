@@ -23,42 +23,67 @@ export default function Home() {
 
   return (
     <div className="max-w-[1200px] mx-auto px-6 py-8">
-      <div className="relative mb-10 overflow-hidden rounded-[28px] bg-ink text-white">
-        <img
-          src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=1600&q=85"
-          alt="Luxury beauty products"
-          className="absolute inset-0 h-full w-full object-cover opacity-35"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/75 to-transparent" />
-        <div className="relative max-w-2xl px-7 py-12 md:px-10 md:py-16">
-          <div className="mb-3 text-xs font-bold uppercase tracking-[0.22em] text-[#FBDDE5]">New beauty edit</div>
-          <h1 className="text-4xl font-black leading-tight md:text-5xl">Skincare and shades, matched to you.</h1>
-          <p className="mt-4 text-base leading-7 text-white/85">Explore fresh serums, glow makeup, fragrances, haircare, and tools curated for a premium GlamSphere shelf.</p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <a href="#catalog" className="btn-primary px-5 py-3 text-sm">Shop the edit</a>
-            <a href="/quiz" className="rounded-full border border-white/40 px-5 py-3 text-sm font-bold text-white transition hover:bg-white hover:text-ink">Skin quiz</a>
-          </div>
-        </div>
-      </div>
-
-      {trending.length > 0 && (
-        <div className="mb-10">
-          <div className="mb-4 flex items-end justify-between gap-4">
-            <div>
-              <div className="text-xs font-bold uppercase tracking-[0.16em] text-accent">Most loved</div>
-              <h2 className="text-2xl font-black">Trending now</h2>
+      {/* Hero / Brand Statement */}
+      <section className="relative mb-10 overflow-hidden rounded-2xl bg-gradient-to-br from-[#FFF0F4] via-[#FFF7F2] to-white p-6 shadow-md">
+        <div className="flex flex-col-reverse md:flex-row items-center gap-6">
+          <div className="md:w-1/2">
+            <div className="mb-2 text-sm font-semibold text-[#8A1F3D] uppercase tracking-wide">Curated for you</div>
+            <h1 className="text-3xl md:text-4xl font-extrabold text-ink">Beauty that feels personal — not generic.</h1>
+            <p className="mt-4 text-base text-[#6B5760]">We blend clean science and playful glamour to help you discover products that actually suit your skin, style, and story.</p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <a href="#catalog" className="btn-primary px-5 py-3">Shop curated</a>
+              <a href="/quiz" className="btn-outline px-5 py-3">Take the skin quiz</a>
             </div>
           </div>
-          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-5">
-            {trending.map((p) => <ProductCard key={p._id} product={p} />)}
+
+          <div className="md:w-1/2">
+            <div className="rounded-xl overflow-hidden bg-white shadow-lg">
+              <img src="https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=1200&q=80" alt="hero" className="w-full h-64 object-cover" />
+            </div>
           </div>
         </div>
+      </section>
+
+      {/* Category tiles */}
+      <section className="mb-8">
+        <h2 className="mb-4 text-xl font-black">Browse by category</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+          {CATEGORIES.map((c) => (
+            <button key={c} onClick={() => setCategory(c)} className={`flex flex-col items-center gap-2 p-3 rounded-xl transition hover:scale-[1.03] ${category === c ? 'ring-2 ring-accent' : 'bg-white'}`}>
+              <div className="h-12 w-12 rounded-full bg-gradient-to-br from-pink-100 to-amber-100 flex items-center justify-center text-xl font-bold text-accent">{c[0]}</div>
+              <div className="text-sm font-semibold text-ink">{c}</div>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* Spotlight */}
+      {trending.length > 0 && (
+        <section className="mb-8">
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <div className="text-xs font-bold uppercase tracking-wider text-accent">Editors pick</div>
+              <h2 className="text-2xl font-black">Spotlight</h2>
+            </div>
+            <a href="#catalog" className="text-sm font-semibold text-accent">View all trending →</a>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {trending.slice(0, 3).map((p) => (
+              <div key={p._id} className="rounded-2xl overflow-hidden bg-white p-4 shadow-md">
+                <ProductCard product={p} />
+              </div>
+            ))}
+          </div>
+        </section>
       )}
 
+      {/* Catalog controls */}
       <div id="catalog" className="mb-5 flex flex-wrap items-center gap-2">
-        {CATEGORIES.map((c) => (
-          <button key={c} onClick={() => setCategory(c)} className={`chip px-3 py-1.5 ${category === c ? "active" : ""}`}>{c}</button>
-        ))}
+        <div className="flex gap-2 flex-wrap">
+          {CATEGORIES.map((c) => (
+            <button key={c} onClick={() => setCategory(c)} className={`chip px-3 py-1.5 ${category === c ? "active" : ""}`}>{c}</button>
+          ))}
+        </div>
         <select value={sort} onChange={(e) => setSort(e.target.value)} className="chip px-3 py-1.5 ml-auto">
           <option value="relevance">Sort: Relevance</option>
           <option value="price-low">Price: Low to High</option>
@@ -67,6 +92,7 @@ export default function Home() {
         </select>
       </div>
 
+      {/* Product grid */}
       {products.length === 0 ? (
         <div className="text-center py-16 text-[#6B5760]">No products found.</div>
       ) : (
