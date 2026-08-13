@@ -38,7 +38,7 @@ export default function Home() {
 
           <div className="md:w-1/2">
             <div className="rounded-xl overflow-hidden bg-white shadow-lg">
-              <img src="https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=1200&q=80" alt="hero" className="w-full h-64 object-cover" />
+              <img src="https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=1200&q=80" alt="hero" className="w-full h-64 object-cover hero-image" />
             </div>
           </div>
         </div>
