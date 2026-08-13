@@ -17,7 +17,15 @@ export default function Home() {
 
   useEffect(() => {
     api.get("/products", { params: { search, category, sort } })
-      .then(({ data }) => setProducts(data.items))
+      .then(({ data }) => {
+        // Use API data if available and not empty, otherwise use sample products
+        if (data.items && data.items.length > 0) {
+          setProducts(data.items);
+        } else {
+          setProducts(sampleProducts);
+          setOffline(true);
+        }
+      })
       .catch(() => {
         // fallback to local demo data when backend is not available
         setProducts(sampleProducts);
@@ -26,10 +34,20 @@ export default function Home() {
   }, [search, category, sort]);
 
   useEffect(() => {
-    api.get("/ai/trending").then(({ data }) => setTrending(data.items)).catch(() => {
-      setTrending(sampleProducts.filter((p) => p.trending));
-      setOffline(true);
-    });
+    api.get("/ai/trending")
+      .then(({ data }) => {
+        // Use API data if available and not empty, otherwise use sample trending
+        if (data.items && data.items.length > 0) {
+          setTrending(data.items);
+        } else {
+          setTrending(sampleProducts.filter((p) => p.trending));
+          setOffline(true);
+        }
+      })
+      .catch(() => {
+        setTrending(sampleProducts.filter((p) => p.trending));
+        setOffline(true);
+      });
   }, []);
 
   return (

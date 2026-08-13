@@ -37,6 +37,7 @@ export default function Header() {
         </form>
 
         <nav className="flex items-center gap-3 text-sm">
+          <Link to="/" className="chip px-3 py-1.5">Home</Link>
           <Link to="/quiz" className="chip px-3 py-1.5">Skin Quiz</Link>
           <Link to="/shade-finder" className="chip px-3 py-1.5">Shade Finder</Link>
           <Link to="/wishlist" className="hidden sm:inline">Wishlist ({wishlist.length})</Link>
