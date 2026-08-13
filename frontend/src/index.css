@@ -30,7 +30,8 @@ body {
 
 /* Additional visual flourishes */
 .hero-image {
-  @apply shadow-xl rounded-xl animate-float;
+  @apply shadow-xl rounded-xl;
+  animation: float 6s ease-in-out infinite;
 }
 
 .product-spotlight .card {
