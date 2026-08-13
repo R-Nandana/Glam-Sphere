@@ -1,4 +1,5 @@
 const asyncHandler = require("express-async-handler");
+const validator = require("validator");
 const User = require("../models/User");
 const generateToken = require("../utils/generateToken");
 
@@ -10,6 +11,16 @@ const registerUser = asyncHandler(async (req, res) => {
   if (!name || !email || !password) {
     res.status(400);
     throw new Error("Name, email, and password are required");
+  }
+
+  if (!validator.isEmail(email)) {
+    res.status(400);
+    throw new Error("Please enter a valid email address");
+  }
+
+  if (password.length < 6) {
+    res.status(400);
+    throw new Error("Password must be at least 6 characters long");
   }
 
   const existing = await User.findOne({ email });
@@ -31,6 +42,12 @@ const registerUser = asyncHandler(async (req, res) => {
 // @route POST /api/auth/login
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
+
+  if (!email || !password || !validator.isEmail(email)) {
+    res.status(400);
+    throw new Error("Please provide a valid email and password");
+  }
+
   const user = await User.findOne({ email }).select("+password");
 
   if (!user || !(await user.matchPassword(password))) {
