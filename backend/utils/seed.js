@@ -261,6 +261,26 @@ const products = [
     ratingAvg: 4.6,
     ratingCount: 58,
   },
+  {
+    name: "Solar Defense Mineral Sunscreen SPF 50",
+    brand: "Solara Botanics",
+    description: "Invisible zinc oxide SPF 50 sunscreen with zero white cast, hydrating squalane, and blue light defense.",
+    category: "Skincare",
+    subCategory: "Sunscreen",
+    price: 999,
+    mrp: 1199,
+    stock: 60,
+    images: [
+      { url: "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&w=900&q=85", publicId: "seed/solar-defense-spf50" },
+    ],
+    skinTypes: ["Dry", "Sensitive", "Normal", "Oily", "Combination"],
+    concerns: ["sun damage", "aging", "dark spots"],
+    ingredients: ["Zinc oxide", "Squalane", "Ectoin"],
+    tags: ["spf", "mineral", "sunscreen"],
+    ratingAvg: 4.9,
+    ratingCount: 289,
+    trending: true,
+  },
 ];
 
 const run = async () => {

@@ -52,13 +52,20 @@ export default function Chatbot() {
     setTyping(true);
     try {
       const { data } = await api.post("/ai/chat", { message: t });
-      setMessages((m) => [...m, { from: "bot", text: data.reply, time: Date.now() }]);
+      setMessages((m) => [...m, { from: "bot", text: data.reply || "Ask me about routines, skin types, or shade matching!", time: Date.now() }]);
     } catch {
-      setMessages((m) => [...m, {
-        from: "bot",
-        text: "Glow is resting right now 🌙 — try again in a moment.",
-        time: Date.now(),
-      }]);
+      // Smart offline fallback responder
+      let reply = "I'm Glow, your AI beauty advisor! ✨ Ask me about oily/dry skin, routine steps, foundation shades, SPF, or tracking orders.";
+      if (/oily/i.test(t)) reply = "For oily skin, look for lightweight, oil-free formulas with salicylic acid or niacinamide. Try our Clarity Clay Cleanser!";
+      else if (/dry/i.test(t)) reply = "Dry skin thrives on layered hydration! Try Dew Drop Hydra Serum followed by Cloud Veil Barrier Cream.";
+      else if (/sensitive/i.test(t)) reply = "For sensitive skin, choose soothing Centella and Squalane formulas like Cloud Veil Barrier Cream.";
+      else if (/routine/i.test(t)) reply = "A great daily routine: Cleanse → Hydrating Serum → Moisturizer → SPF 50 in AM; Double Cleanse → Treatment → Barrier Cream in PM!";
+      else if (/shade|foundation/i.test(t)) reply = "Try our AI Shade Finder! Pick your undertone and skin depth to get your perfect foundation match.";
+      else if (/track|order/i.test(t)) reply = "Track your order anytime under 'My Orders' in the main menu to view live status updates!";
+      else if (/sunscreen|spf/i.test(t)) reply = "Protect your glow daily with Solar Defense Mineral Sunscreen SPF 50 — broad spectrum with zero white cast.";
+      else if (/hi|hello|hey/i.test(t)) reply = "Hi there! ✨ I'm Glow. Ask me anything about skincare, shade matching, or product picks.";
+      
+      setMessages((m) => [...m, { from: "bot", text: reply, time: Date.now() }]);
     } finally {
       setTyping(false);
     }
