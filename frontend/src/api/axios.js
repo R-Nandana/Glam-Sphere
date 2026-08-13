@@ -1,20 +1,35 @@
 import axios from "axios";
 
-// Vite dev server proxies /api -> http://localhost:5000 (see vite.config.js)
-// On GitHub Pages (VITE_API_URL=''), requests will fail silently and components will use fallback data
+// Base URL:
+//   - Dev:  Vite proxy forwards /api to http://localhost:5000/api
+//   - Prod: VITE_API_URL must be set to your deployed backend root (e.g. https://api.glamsphere.onrender.com/api)
+//   - GH Pages demo: VITE_API_URL='' → requests silently return empty and components use sample data
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "/api",
-  withCredentials: true, // send the httpOnly JWT cookie set by the backend
+  withCredentials: true, // send the httpOnly JWT cookie issued by the backend
+  timeout: 15000,
 });
 
-// Suppress errors when API is disabled (empty VITE_API_URL on production)
+// ── Response interceptors ────────────────────────────────────────────────────
+
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (import.meta.env.VITE_API_URL === '') {
-      // On GitHub Pages, silently return empty response so components can use fallback data
-      return Promise.resolve({ data: { items: [] } });
+    // GitHub Pages / static demo mode — silently return empty data
+    if (import.meta.env.VITE_API_URL === "") {
+      return Promise.resolve({ data: { items: [], orders: [], wishlist: [], coupons: [] } });
     }
+
+    // 401 Unauthorized — token expired or missing; clear local user state and redirect
+    if (err.response?.status === 401) {
+      localStorage.removeItem("glamsphere_user");
+      // Only redirect if not already on /login or /register
+      const path = window.location.pathname;
+      if (!path.includes("/login") && !path.includes("/register")) {
+        window.location.href = "/login";
+      }
+    }
+
     return Promise.reject(err);
   }
 );

@@ -6,6 +6,7 @@ import sampleProducts from "../data/sampleProducts";
 import ProductCard from "../components/ProductCard";
 import { SkeletonGrid } from "../components/SkeletonCard";
 import { useAuth } from "../context/AuthContext";
+import useTitle from "../hooks/useTitle";
 
 const CATEGORIES = ["All", "Skincare", "Makeup", "Haircare", "Fragrance", "Tools"];
 
@@ -22,6 +23,7 @@ export default function Home() {
   const [loadingTrending, setLoadingTrending] = useState(true);
   const [offline, setOffline] = useState(false);
   const search = params.get("search") || "";
+  useTitle(search ? `Search: ${search}` : "GlamSphere — AI-Powered Personalised Beauty");
 
   useEffect(() => {
     setLoadingProducts(true);

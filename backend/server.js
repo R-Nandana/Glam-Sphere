@@ -30,7 +30,15 @@ app.use(cookieParser());
 if (process.env.NODE_ENV !== "test") app.use(morgan("dev"));
 
 // Basic global rate limit (tune per-route as needed, e.g. tighter on /auth)
-app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 300 }));
+app.use(rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 300,
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+}));
+
+// Trust proxy for rate limit headers when deployed behind Render/Heroku load balancers
+app.set("trust proxy", 1);
 
 app.get("/api/health", (req, res) => res.json({ success: true, message: "GlamSphere API is running" }));
 

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import useTitle from "../hooks/useTitle";
 import { useParams, Link } from "react-router-dom";
 import { Star, ShoppingBag, Heart, ArrowLeft, CheckCircle, WarningCircle } from "@phosphor-icons/react";
 import api from "../api/axios";
@@ -30,6 +31,8 @@ export default function ProductDetail() {
   const [adding, setAdding] = useState(false);
   const { addToCart, toggleWishlist, wishlist } = useCart();
   const toast = useToast();
+
+  useTitle(product ? `${product.name} | ${product.brand}` : "Product");
 
   const load = () => {
     api.get(`/products/${id}`).then(({ data }) => { setProduct(data.product); setActiveImg(0); setSelectedShade(null); });
