@@ -25,6 +25,14 @@ const app = express();
 
 app.use(helmet());
 app.use(cors({ origin: true, credentials: true }));
+
+// Forgive frontend misconfigurations by auto-prefixing /api
+app.use((req, res, next) => {
+  if (req.url && !req.url.startsWith("/api") && req.url !== "/") {
+    req.url = "/api" + req.url;
+  }
+  next();
+});
 app.use(express.json());
 app.use(cookieParser());
 if (process.env.NODE_ENV !== "test") app.use(morgan("dev"));
