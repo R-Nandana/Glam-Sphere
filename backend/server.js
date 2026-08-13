@@ -24,7 +24,8 @@ connectDB();
 const app = express();
 
 app.use(helmet());
-app.use(cors({ origin: process.env.CLIENT_URL || "http://localhost:5173", credentials: true }));
+const clientUrl = process.env.CLIENT_URL ? process.env.CLIENT_URL.replace(/\/$/, "") : "http://localhost:5173";
+app.use(cors({ origin: [clientUrl, "http://localhost:5173", "http://localhost:4173"], credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 if (process.env.NODE_ENV !== "test") app.use(morgan("dev"));
