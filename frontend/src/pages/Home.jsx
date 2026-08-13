@@ -12,6 +12,7 @@ export default function Home() {
   const [trending, setTrending] = useState([]);
   const [category, setCategory] = useState("All");
   const [sort, setSort] = useState("relevance");
+  const [offline, setOffline] = useState(false);
   const search = params.get("search") || "";
 
   useEffect(() => {
@@ -30,8 +31,6 @@ export default function Home() {
       setOffline(true);
     });
   }, []);
-
-  const [offline, setOffline] = useState(false);
 
   return (
     <div className="max-w-[1200px] mx-auto px-6 py-8">
