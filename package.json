@@ -1,0 +1,13 @@
+{
+  "name": "glamsphere",
+  "version": "1.0.0",
+  "private": true,
+  "description": "GlamSphere monorepo deployment entrypoint",
+  "scripts": {
+    "postinstall": "npm ci --prefix backend",
+    "start": "npm start --prefix backend"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
