@@ -4,8 +4,15 @@ import axios from "axios";
 //   - Dev:  Vite proxy forwards /api to http://localhost:5000/api
 //   - Prod: VITE_API_URL must be set to your deployed backend root (e.g. https://api.glamsphere.onrender.com/api)
 //   - GH Pages demo: VITE_API_URL='' → requests silently return empty and components use sample data
+let baseURL = import.meta.env.VITE_API_URL;
+if (baseURL !== undefined && baseURL !== "" && !baseURL.endsWith("/api")) {
+  baseURL = baseURL.replace(/\/$/, "") + "/api";
+} else if (!baseURL) {
+  baseURL = "/api";
+}
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "/api",
+  baseURL,
   withCredentials: true, // send the httpOnly JWT cookie issued by the backend
   timeout: 15000,
 });
