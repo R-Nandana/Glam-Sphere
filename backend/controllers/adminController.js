@@ -76,4 +76,22 @@ const getCustomers = asyncHandler(async (req, res) => {
   res.json({ success: true, customers: withStats });
 });
 
-module.exports = { getDashboardStats, getRevenueReport, getCategorySales, getCustomers };
+// @desc  Activate / deactivate a customer account
+// @route PUT /api/admin/customers/:id/status
+const setCustomerStatus = asyncHandler(async (req, res) => {
+  const { isActive } = req.body;
+  if (typeof isActive !== "boolean") {
+    res.status(400);
+    throw new Error("isActive must be a boolean");
+  }
+  const user = await User.findById(req.params.id);
+  if (!user || user.role !== "customer") {
+    res.status(404);
+    throw new Error("Customer not found");
+  }
+  user.isActive = isActive;
+  await user.save();
+  res.json({ success: true, message: `Customer ${isActive ? "activated" : "deactivated"}` });
+});
+
+module.exports = { getDashboardStats, getRevenueReport, getCategorySales, getCustomers, setCustomerStatus };
