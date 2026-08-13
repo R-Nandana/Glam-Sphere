@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import api from "../api/axios";
+import sampleProducts from "../data/sampleProducts";
 import ProductCard from "../components/ProductCard";
 
 const CATEGORIES = ["All", "Skincare", "Makeup", "Haircare", "Fragrance", "Tools"];
@@ -14,12 +15,23 @@ export default function Home() {
   const search = params.get("search") || "";
 
   useEffect(() => {
-    api.get("/products", { params: { search, category, sort } }).then(({ data }) => setProducts(data.items));
+    api.get("/products", { params: { search, category, sort } })
+      .then(({ data }) => setProducts(data.items))
+      .catch(() => {
+        // fallback to local demo data when backend is not available
+        setProducts(sampleProducts);
+        setOffline(true);
+      });
   }, [search, category, sort]);
 
   useEffect(() => {
-    api.get("/ai/trending").then(({ data }) => setTrending(data.items));
+    api.get("/ai/trending").then(({ data }) => setTrending(data.items)).catch(() => {
+      setTrending(sampleProducts.filter((p) => p.trending));
+      setOffline(true);
+    });
   }, []);
+
+  const [offline, setOffline] = useState(false);
 
   return (
     <div className="max-w-[1200px] mx-auto px-6 py-8">
@@ -58,6 +70,10 @@ export default function Home() {
       </section>
 
       {/* Spotlight */}
+      {offline && (
+        <div className="mb-4 rounded-md bg-amber-50 border border-amber-100 p-3 text-sm text-amber-800">Showing demo data because backend is unavailable.</div>
+      )}
+
       {trending.length > 0 && (
         <section className="mb-8">
           <div className="mb-4 flex items-center justify-between">

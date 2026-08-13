@@ -1,0 +1,42 @@
+const sampleProducts = [
+  {
+    _id: 'sample1',
+    name: 'Dew Drop Hydra Serum',
+    brand: 'Lumière Lab',
+    description: 'A featherlight serum with triple-weight hyaluronic acid for plump, glassy hydration.',
+    category: 'Skincare',
+    price: 1299,
+    mrp: 1599,
+    images: [{ url: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=900&q=85' }],
+    ratingAvg: 4.8,
+    ratingCount: 214,
+    trending: true,
+  },
+  {
+    _id: 'sample2',
+    name: 'Velvet Matte Lipstick',
+    brand: 'Rue Noir',
+    description: 'A weightless soft-matte lipstick with saturated color and a velvet blur finish.',
+    category: 'Makeup',
+    price: 899,
+    mrp: 899,
+    images: [{ url: 'https://images.unsplash.com/photo-1586495777744-4413f21062fa?auto=format&fit=crop&w=900&q=85' }],
+    ratingAvg: 4.6,
+    ratingCount: 302,
+  },
+  {
+    _id: 'sample3',
+    name: 'C-Glow Vitamin Nectar',
+    brand: 'Solara Botanics',
+    description: 'A brightening vitamin C serum with ferulic acid for radiant, even-looking skin.',
+    category: 'Skincare',
+    price: 1599,
+    mrp: 1899,
+    images: [{ url: 'https://images.unsplash.com/photo-1611930022073-b7a4ba5fcccd?auto=format&fit=crop&w=900&q=85' }],
+    ratingAvg: 4.7,
+    ratingCount: 121,
+    trending: true,
+  },
+];
+
+export default sampleProducts;
