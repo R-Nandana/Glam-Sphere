@@ -22,7 +22,13 @@ export default function Login() {
       toast.success("Welcome back!");
       navigate("/");
     } catch (err) {
-      setError(err.response?.data?.message || "Invalid email or password");
+      if (!err.response) {
+        setError("Network Error: Could not reach the server. If you just deployed, make sure VITE_API_URL is set in your frontend settings, and CLIENT_URL is set in your backend settings.");
+      } else if (typeof err.response.data === "string" && err.response.data.includes("<html")) {
+        setError("Configuration Error: The API URL is pointing to a web page instead of the backend. Please check VITE_API_URL.");
+      } else {
+        setError(err.response?.data?.message || "Login failed — please check your credentials");
+      }
     } finally {
       setLoading(false);
     }
