@@ -3,6 +3,7 @@ import { Link, NavLink, useNavigate, useSearchParams } from "react-router-dom";
 import { MagnifyingGlass, ShoppingBag, Heart, List, X, User, SignOut, Sparkle } from "@phosphor-icons/react";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
+import api from "../api/axios";
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -11,6 +12,8 @@ export default function Header() {
   const searchParam = params.get("search") || "";
   const [search, setSearch] = useState(searchParam);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
   const debounceRef = useRef(null);
 
@@ -21,20 +24,33 @@ export default function Header() {
   const cartCount = cart.items?.length || 0;
   const wishlistCount = wishlist.length || 0;
 
-  // Debounced search — navigates on keystroke after 200ms
+  // Debounced search — fetches results
   const handleSearchChange = (e) => {
     const val = e.target.value;
     setSearch(val);
+    setShowDropdown(true);
     clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
+    debounceRef.current = setTimeout(async () => {
       const trimmed = val.trim();
-      navigate(trimmed ? `/?search=${encodeURIComponent(trimmed)}` : "/");
+      if (!trimmed) {
+        setSearchResults([]);
+        return;
+      }
+      try {
+        const { data } = await api.get("/products", { params: { search: trimmed } });
+        if (data?.items) {
+          setSearchResults(data.items.slice(0, 5));
+        }
+      } catch {
+        setSearchResults([]);
+      }
     }, 200);
   };
 
   const onSearchSubmit = (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     clearTimeout(debounceRef.current);
+    setShowDropdown(false);
     const trimmed = search.trim();
     navigate(trimmed ? `/?search=${encodeURIComponent(trimmed)}` : "/");
   };
@@ -83,36 +99,90 @@ export default function Header() {
           </Link>
 
           {/* Search */}
-          <form onSubmit={onSearchSubmit} style={{ flex: 1, maxWidth: 480 }}>
-            <div style={{ position: "relative" }}>
-              <MagnifyingGlass
-                size={16} weight="bold"
-                style={{ position: "absolute", left: "0.875rem", top: "50%", transform: "translateY(-50%)", color: "var(--color-ink-muted)", pointerEvents: "none" }}
-              />
-              <input
-                value={search}
-                onChange={handleSearchChange}
-                placeholder="Search shades, brands, concerns…"
-                aria-label="Search products"
-                style={{
-                  width: "100%",
-                  paddingLeft: "2.625rem",
-                  paddingRight: "1rem",
-                  paddingTop: "0.5rem",
-                  paddingBottom: "0.5rem",
-                  background: "var(--color-white)",
-                  border: "1.5px solid var(--color-border)",
-                  borderRadius: "9999px",
-                  fontSize: "0.875rem",
-                  color: "var(--color-ink)",
-                  outline: "none",
-                  transition: "border-color 150ms, box-shadow 150ms",
-                }}
-                onFocus={(e) => { e.target.style.borderColor = "var(--color-primary-300)"; e.target.style.boxShadow = "0 0 0 3px rgba(181,75,84,0.10)"; }}
-                onBlur={(e) => { e.target.style.borderColor = "var(--color-border)"; e.target.style.boxShadow = "none"; }}
-              />
-            </div>
-          </form>
+          <div style={{ flex: 1, maxWidth: 480, position: "relative" }}>
+            <form onSubmit={onSearchSubmit}>
+              <div style={{ position: "relative" }}>
+                <MagnifyingGlass
+                  size={16} weight="bold"
+                  style={{ position: "absolute", left: "0.875rem", top: "50%", transform: "translateY(-50%)", color: "var(--color-ink-muted)", pointerEvents: "none" }}
+                />
+                <input
+                  value={search}
+                  onChange={handleSearchChange}
+                  onFocus={() => { if(search.trim()) setShowDropdown(true); }}
+                  onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+                  placeholder="Search shades, brands, concerns…"
+                  aria-label="Search products"
+                  style={{
+                    width: "100%",
+                    paddingLeft: "2.625rem",
+                    paddingRight: "1rem",
+                    paddingTop: "0.5rem",
+                    paddingBottom: "0.5rem",
+                    background: "var(--color-white)",
+                    border: "1.5px solid var(--color-border)",
+                    borderRadius: "9999px",
+                    fontSize: "0.875rem",
+                    color: "var(--color-ink)",
+                    outline: "none",
+                    transition: "border-color 150ms, box-shadow 150ms",
+                  }}
+                  onFocusCapture={(e) => { e.target.style.borderColor = "var(--color-primary-300)"; e.target.style.boxShadow = "0 0 0 3px rgba(181,75,84,0.10)"; }}
+                  onBlurCapture={(e) => { e.target.style.borderColor = "var(--color-border)"; e.target.style.boxShadow = "none"; }}
+                />
+              </div>
+            </form>
+            
+            {showDropdown && searchResults.length > 0 && (
+              <div style={{
+                position: "absolute",
+                top: "100%", left: 0, right: 0,
+                marginTop: "0.5rem",
+                background: "var(--color-white)",
+                borderRadius: "16px",
+                boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
+                border: "1px solid var(--color-border)",
+                overflow: "hidden",
+                zIndex: 50,
+              }}>
+                {searchResults.map(p => (
+                  <Link 
+                    key={p._id} 
+                    to={`/products/${p._id}`}
+                    onClick={() => setShowDropdown(false)}
+                    style={{
+                      display: "flex", alignItems: "center", gap: "0.75rem",
+                      padding: "0.75rem 1rem",
+                      borderBottom: "1px solid var(--color-border)",
+                      textDecoration: "none", color: "var(--color-ink)",
+                      transition: "background 150ms"
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = "var(--color-surface-alt)"}
+                    onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+                  >
+                    <div style={{ width: 40, height: 40, borderRadius: 8, background: "var(--color-surface-alt)", overflow: "hidden", flexShrink: 0 }}>
+                      {p.images?.[0]?.url && <img src={p.images[0].url} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />}
+                    </div>
+                    <div style={{ flex: 1, overflow: "hidden" }}>
+                      <div style={{ fontSize: "0.8125rem", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{p.name}</div>
+                      <div style={{ fontSize: "0.75rem", color: "var(--color-ink-muted)" }}>{p.brand}</div>
+                    </div>
+                    <div style={{ fontSize: "0.8125rem", fontWeight: 600 }}>₹{p.price}</div>
+                  </Link>
+                ))}
+                <div 
+                  onClick={onSearchSubmit}
+                  style={{
+                    padding: "0.75rem 1rem", textAlign: "center", fontSize: "0.8125rem", fontWeight: 600,
+                    color: "var(--color-primary-500)", cursor: "pointer", background: "var(--color-primary-50)",
+                    borderTop: "1px solid var(--color-border)"
+                  }}
+                >
+                  View all results for "{search}"
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Desktop nav links */}
           <nav className="hidden md:flex items-center" style={{ gap: "0.25rem" }}>
