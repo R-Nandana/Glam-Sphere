@@ -64,48 +64,102 @@ export default function Home() {
         </div>
 
         <div className="page-container" style={{ position: "relative", maxWidth: "1200px" }}>
-          <div style={{ maxWidth: "620px" }}>
-            <div className="eyebrow" style={{ color: "var(--color-accent)", marginBottom: "1.25rem" }}>
-              AI-Powered Personalization
+          <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            {/* Left Text Column */}
+            <div className="lg:col-span-7" style={{ maxWidth: "640px" }}>
+              <div className="eyebrow" style={{ color: "var(--color-accent)", marginBottom: "1.25rem" }}>
+                AI-Powered Personalization
+              </div>
+              <h1 style={{
+                fontFamily: "'Fraunces', serif",
+                fontSize: "clamp(2.5rem, 5.5vw, 4.25rem)",
+                fontWeight: 300,
+                lineHeight: 1.05,
+                letterSpacing: "-0.025em",
+                color: "#FBF0F0",
+                margin: "0 0 1.25rem",
+              }}>
+                Beauty that feels{" "}
+                <em style={{ fontStyle: "italic", color: "var(--color-primary-300)" }}>personal</em>
+                {" "}—{" "}not generic.
+              </h1>
+              <p style={{ fontSize: "1.125rem", lineHeight: 1.65, color: "var(--color-primary-100)", opacity: 0.88, maxWidth: "520px", marginBottom: "2rem" }}>
+                We blend clean science and personalized AI to help you discover products that actually suit your skin, shade, and story.
+              </p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.875rem" }}>
+                <a href="#catalog" className="btn-primary" style={{ padding: "0.875rem 2rem", fontSize: "0.9375rem", background: "var(--color-accent)", color: "var(--color-ink)" }}>
+                  Shop curated
+                </a>
+                <Link to="/quiz" className="btn-outline" style={{
+                  padding: "0.875rem 2rem", fontSize: "0.9375rem",
+                  borderColor: "rgba(243,217,218,0.35)", color: "var(--color-primary-100)",
+                }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--color-primary-100)"; e.currentTarget.style.background = "rgba(251,240,240,0.08)"; e.currentTarget.style.color = "var(--color-primary-50)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(243,217,218,0.35)"; e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--color-primary-100)"; }}
+                >
+                  Take the skin quiz
+                </Link>
+              </div>
+              {/* Trust badges */}
+              <div style={{ display: "flex", gap: "2rem", marginTop: "2.5rem", flexWrap: "wrap" }}>
+                {[["10k+", "Happy customers"], ["500+", "Curated products"], ["AI", "Personalised picks"]].map(([n, l]) => (
+                  <div key={l}>
+                    <div style={{ fontFamily: "'Fraunces', serif", fontSize: "1.375rem", fontWeight: 400, color: "var(--color-accent)", lineHeight: 1 }}>{n}</div>
+                    <div style={{ fontSize: "0.75rem", color: "var(--color-primary-300)", marginTop: "0.25rem", fontWeight: 500 }}>{l}</div>
+                  </div>
+                ))}
+              </div>
             </div>
-            <h1 style={{
-              fontFamily: "'Fraunces', serif",
-              fontSize: "clamp(2.5rem, 6vw, 4.5rem)",
-              fontWeight: 300,
-              lineHeight: 1.05,
-              letterSpacing: "-0.025em",
-              color: "#FBF0F0",
-              margin: "0 0 1.25rem",
-            }}>
-              Beauty that feels{" "}
-              <em style={{ fontStyle: "italic", color: "var(--color-primary-300)" }}>personal</em>
-              {" "}—{" "}not generic.
-            </h1>
-            <p style={{ fontSize: "1.125rem", lineHeight: 1.65, color: "var(--color-primary-100)", opacity: 0.85, maxWidth: "480px", marginBottom: "2rem" }}>
-              We blend clean science and personalized AI to help you discover products that actually suit your skin, shade, and story.
-            </p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.875rem" }}>
-              <a href="#catalog" className="btn-primary" style={{ padding: "0.875rem 2rem", fontSize: "0.9375rem", background: "var(--color-accent)", color: "var(--color-ink)" }}>
-                Shop curated
-              </a>
-              <Link to="/quiz" className="btn-outline" style={{
-                padding: "0.875rem 2rem", fontSize: "0.9375rem",
-                borderColor: "rgba(243,217,218,0.35)", color: "var(--color-primary-100)",
-              }}
-                onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--color-primary-100)"; e.currentTarget.style.background = "rgba(251,240,240,0.08)"; e.currentTarget.style.color = "var(--color-primary-50)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(243,217,218,0.35)"; e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--color-primary-100)"; }}
-              >
-                Take the skin quiz
-              </Link>
-            </div>
-            {/* Trust badges */}
-            <div style={{ display: "flex", gap: "2rem", marginTop: "2.5rem", flexWrap: "wrap" }}>
-              {[["10k+", "Happy customers"], ["500+", "Curated products"], ["AI", "Personalised picks"]].map(([n, l]) => (
-                <div key={l}>
-                  <div style={{ fontFamily: "'Fraunces', serif", fontSize: "1.375rem", fontWeight: 400, color: "var(--color-accent)", lineHeight: 1 }}>{n}</div>
-                  <div style={{ fontSize: "0.75rem", color: "var(--color-primary-300)", marginTop: "0.25rem", fontWeight: 500 }}>{l}</div>
+
+            {/* Right Hero Image Column */}
+            <div className="lg:col-span-5 hidden lg:block" style={{ position: "relative" }}>
+              <div style={{
+                position: "relative",
+                borderRadius: "28px",
+                overflow: "hidden",
+                boxShadow: "0 24px 60px rgba(0,0,0,0.35)",
+                border: "1px solid rgba(243,217,218,0.2)",
+                aspectRatio: "4/5",
+              }}>
+                <img
+                  src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1000&q=85"
+                  alt="GlamSphere Luxury Cosmetics"
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+                <div style={{
+                  position: "absolute", inset: 0,
+                  background: "linear-gradient(to top, rgba(61,18,21,0.6) 0%, transparent 50%)",
+                }} />
+
+                {/* Floating Glassmorphism AI Recommendation Badge */}
+                <div style={{
+                  position: "absolute", bottom: "1.25rem", left: "1.25rem", right: "1.25rem",
+                  background: "rgba(36, 31, 28, 0.75)",
+                  backdropFilter: "blur(12px)",
+                  border: "1px solid rgba(243,217,218,0.25)",
+                  borderRadius: "16px",
+                  padding: "0.875rem 1.125rem",
+                  display: "flex", alignItems: "center", gap: "0.875rem",
+                  color: "#FFFFFF",
+                }}>
+                  <div style={{
+                    width: "42px", height: "42px", borderRadius: "12px",
+                    background: "var(--color-primary-500)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    flexShrink: 0,
+                  }}>
+                    <Sparkle size={22} weight="fill" style={{ color: "var(--color-accent)" }} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: "0.6875rem", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-accent)", fontWeight: 700 }}>
+                      ✦ 98% Match Guarantee
+                    </div>
+                    <div style={{ fontSize: "0.875rem", fontWeight: 500, fontFamily: "'Fraunces', serif" }}>
+                      Dew Drop Hydra Serum
+                    </div>
+                  </div>
                 </div>
-              ))}
+              </div>
             </div>
           </div>
         </div>
