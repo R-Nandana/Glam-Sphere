@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --accent: #E8527A;
+}
+
+body {
+  background: #FBF5F3;
+  color: #2A1B22;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+.btn-primary {
+  @apply bg-accent text-white font-bold rounded-full transition-transform hover:-translate-y-0.5;
+}
+.btn-outline {
+  @apply border-2 border-ink text-ink font-semibold rounded-full hover:bg-ink hover:text-white transition;
+}
+.card {
+  @apply bg-white border border-[#EFE1E0] rounded-2xl;
+}
+.chip {
+  @apply border border-[#EFE1E0] bg-white font-semibold text-sm rounded-full;
+}
+.chip.active {
+  @apply bg-ink text-white border-ink;
+}
