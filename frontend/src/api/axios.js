@@ -17,6 +17,17 @@ const api = axios.create({
   timeout: 15000,
 });
 
+// ── Request interceptors ────────────────────────────────────────────────────
+
+// Attach stored JWT token to every request (cross-domain auth fix)
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("glamsphere_token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 // ── Response interceptors ────────────────────────────────────────────────────
 
 api.interceptors.response.use(
@@ -30,6 +41,7 @@ api.interceptors.response.use(
     // 401 Unauthorized — token expired or missing; clear local user state and redirect
     if (err.response?.status === 401) {
       localStorage.removeItem("glamsphere_user");
+      localStorage.removeItem("glamsphere_token");
       // Only redirect if not already on /login or /register
       const path = window.location.pathname;
       if (!path.includes("/login") && !path.includes("/register")) {

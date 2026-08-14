@@ -30,10 +30,11 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   const user = await User.create({ name, email, password, phone });
-  generateToken(res, user._id);
+  const token = generateToken(res, user._id);
 
   res.status(201).json({
     success: true,
+    token,
     user: { id: user._id, name: user.name, email: user.email, role: user.role },
   });
 });
@@ -55,9 +56,10 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new Error("Invalid email or password");
   }
 
-  generateToken(res, user._id);
+  const token = generateToken(res, user._id);
   res.json({
     success: true,
+    token,
     user: { id: user._id, name: user.name, email: user.email, role: user.role },
   });
 });

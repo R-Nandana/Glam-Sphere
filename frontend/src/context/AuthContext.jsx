@@ -35,6 +35,7 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     const { data } = await api.post("/auth/login", { email, password });
+    if (data.token) localStorage.setItem('glamsphere_token', data.token);
     setUser(data.user);
     localStorage.setItem('glamsphere_user', JSON.stringify(data.user));
     return data.user;
@@ -42,6 +43,7 @@ export function AuthProvider({ children }) {
 
   const register = async (payload) => {
     const { data } = await api.post("/auth/register", payload);
+    if (data.token) localStorage.setItem('glamsphere_token', data.token);
     setUser(data.user);
     localStorage.setItem('glamsphere_user', JSON.stringify(data.user));
     return data.user;
@@ -53,6 +55,7 @@ export function AuthProvider({ children }) {
     } catch {}
     setUser(null);
     localStorage.removeItem('glamsphere_user');
+    localStorage.removeItem('glamsphere_token');
   };
 
   return (
